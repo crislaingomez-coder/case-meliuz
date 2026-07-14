@@ -5,3 +5,6 @@ __pycache__/
 venv/
 saidas/dashboard_meliuz.xlsx
 saidas/graficos/
+saidas/painel_meliuz_preview.xlsx
+~$*
+saidas/~$*

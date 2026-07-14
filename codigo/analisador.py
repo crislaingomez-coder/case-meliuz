@@ -100,6 +100,7 @@ def analyze_dataset(
         row={
             "data_registro": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             "nome_teste": test_name,
+            "descricao": f"Teste A/B de cashback do {partner} no periodo de {period}.",
             "dataset": dataset_path.name,
             "parceiro": partner,
             "periodo": period,
@@ -367,12 +368,28 @@ def _build_ai_context(
 
 
 def _upsert_summary(summary_path: Path, row: dict[str, str]) -> None:
+    columns = [
+        "data_registro",
+        "nome_teste",
+        "descricao",
+        "dataset",
+        "parceiro",
+        "periodo",
+        "variante_recomendada",
+        "resultado",
+        "decisao",
+        "relatorio",
+    ]
     if summary_path.exists():
         summary = pd.read_csv(summary_path)
         summary = summary[summary["nome_teste"] != row["nome_teste"]]
         summary = pd.concat([summary, pd.DataFrame([row])], ignore_index=True)
     else:
         summary = pd.DataFrame([row])
+    for column in columns:
+        if column not in summary.columns:
+            summary[column] = ""
+    summary = summary[columns]
     summary = summary.sort_values(["parceiro", "nome_teste"])
     summary.to_csv(summary_path, index=False, encoding="utf-8-sig")
 
