@@ -12,18 +12,18 @@ from PIL import Image, ImageDraw, ImageFont
 from codigo.analisador import AnalysisResult
 
 
-AZUL_ESCURO = "17365D"
-AZUL = "2F75B5"
-VERDE = "548235"
-CINZA_FUNDO = "F6F8FB"
-CINZA_BORDA = "D9E2F3"
-CINZA_TEXTO = "44546A"
+VERDE_MELIUZ = "426F49"
+VERDE_ESCURO = "31583A"
+ROSA_MELIUZ = "F48DB8"
+ROSA_ESCURO = "D95F95"
+ROSA_CLARO = "FCE4EF"
+VERDE_CLARO = "E7F1E7"
+CINZA_FUNDO = "F5F7F5"
+CINZA_BORDA = "D8E3D8"
+CINZA_TEXTO = "34423A"
 BRANCO = "FFFFFF"
-AMARELO_CLARO = "FFF2CC"
-VERDE_CLARO = "E2F0D9"
-AZUL_CLARO = "DDEBF7"
-VERMELHO = "C00000"
-PALETA = ["2F75B5", "70AD47", "ED7D31", "A5A5A5", "FFC000"]
+AMARELO_CLARO = "FFF0C7"
+PALETA = [ROSA_MELIUZ, VERDE_MELIUZ, ROSA_ESCURO, "8CA98D", "E8B7CC"]
 
 
 def build_dashboard(results: list[AnalysisResult], output_path: str | Path) -> Path:
@@ -46,7 +46,7 @@ def build_dashboard(results: list[AnalysisResult], output_path: str | Path) -> P
 
 def _build_summary_sheet(ws, results: list[AnalysisResult], chart_dir: Path) -> None:
     _prepare_sheet(ws)
-    _title(ws, "Dashboard de Testes A/B de Cashback", "A1:L1")
+    _title(ws, "Dashboard de Testes A/B de Cashback", "A1:L2", "Analise automatizada de testes de cashback")
 
     winners = [
         result.metrics[result.metrics["grupo"] == result.decision_group].iloc[0]
@@ -56,13 +56,13 @@ def _build_summary_sheet(ws, results: list[AnalysisResult], chart_dir: Path) -> 
     avg_margin = sum(float(row["margem_sobre_gmv"]) for row in winners) / len(winners)
     avg_roi = sum(float(row["roi_cashback"]) for row in winners) / len(winners)
 
-    _kpi_card(ws, "A3:C5", "Testes analisados", len(results), "inteiro", AZUL_CLARO)
-    _kpi_card(ws, "D3:F5", "Lucro vencedor total", total_profit, "moeda", VERDE_CLARO)
-    _kpi_card(ws, "G3:I5", "Margem media", avg_margin, "percentual", AMARELO_CLARO)
-    _kpi_card(ws, "J3:L5", "ROI medio", avg_roi, "percentual", AZUL_CLARO)
+    _kpi_card(ws, "A4:C6", "Testes analisados", len(results), "inteiro", ROSA_CLARO)
+    _kpi_card(ws, "D4:F6", "Lucro vencedor total", total_profit, "moeda", VERDE_CLARO)
+    _kpi_card(ws, "G4:I6", "Margem media", avg_margin, "percentual", AMARELO_CLARO)
+    _kpi_card(ws, "J4:L6", "ROI medio", avg_roi, "percentual", ROSA_CLARO)
 
     headers = ["Parceiro", "Periodo", "Variante", "Lucro", "Margem", "ROI", "Decisao"]
-    start_row = 8
+    start_row = 9
     _write_header(ws, start_row, headers)
     for row_idx, result in enumerate(results, start=start_row + 1):
         winner = result.metrics[result.metrics["grupo"] == result.decision_group].iloc[0]
@@ -93,7 +93,7 @@ def _build_summary_sheet(ws, results: list[AnalysisResult], chart_dir: Path) -> 
         labels,
         profits,
         "moeda",
-        PALETA,
+        [VERDE_MELIUZ, ROSA_MELIUZ, ROSA_ESCURO],
     )
     roi_img = _bar_chart_image(
         chart_dir / "resumo_roi.png",
@@ -101,36 +101,36 @@ def _build_summary_sheet(ws, results: list[AnalysisResult], chart_dir: Path) -> 
         labels,
         rois,
         "percentual",
-        ["70AD47", "70AD47", "70AD47"],
+        [ROSA_MELIUZ, ROSA_MELIUZ, ROSA_MELIUZ],
     )
-    _add_image(ws, profit_img, "A14", 560, 300)
-    _add_image(ws, roi_img, "G14", 560, 300)
+    _add_image(ws, profit_img, "A15", 570, 305)
+    _add_image(ws, roi_img, "G15", 570, 305)
 
-    _set_widths(ws, {"A": 17, "B": 22, "C": 13, "D": 15, "E": 12, "F": 12, "G": 40})
-    ws.freeze_panes = "A8"
+    _set_widths(ws, {"A": 17, "B": 22, "C": 13, "D": 15, "E": 12, "F": 12, "G": 40, "H": 12, "I": 12, "J": 12, "K": 12, "L": 12})
+    ws.freeze_panes = None
     ws.sheet_view.zoomScale = 90
 
 
 def _build_partner_sheet(wb: Workbook, result: AnalysisResult, chart_dir: Path) -> None:
     ws = wb.create_sheet(result.partner.replace("Parceiro ", "Parceiro_")[:31])
     _prepare_sheet(ws)
-    _title(ws, result.test_name, "A1:N1")
+    _title(ws, result.test_name, "A1:N2", f"{result.period} | decisao automatizada")
 
     winner = result.metrics[result.metrics["grupo"] == result.decision_group].iloc[0]
-    _kpi_card(ws, "A3:B5", "Variante recomendada", result.decision_group, "texto", VERDE_CLARO)
-    _kpi_card(ws, "C3:D5", "Lucro liquido", float(winner["lucro_liquido_total"]), "moeda", VERDE_CLARO)
-    _kpi_card(ws, "E3:F5", "Margem GMV", float(winner["margem_sobre_gmv"]), "percentual", AMARELO_CLARO)
-    _kpi_card(ws, "G3:H5", "ROI cashback", float(winner["roi_cashback"]), "percentual", AZUL_CLARO)
+    _kpi_card(ws, "A4:B6", "Variante recomendada", result.decision_group, "texto", VERDE_CLARO)
+    _kpi_card(ws, "C4:D6", "Lucro liquido", float(winner["lucro_liquido_total"]), "moeda", VERDE_CLARO)
+    _kpi_card(ws, "E4:F6", "Margem GMV", float(winner["margem_sobre_gmv"]), "percentual", AMARELO_CLARO)
+    _kpi_card(ws, "G4:H6", "ROI cashback", float(winner["roi_cashback"]), "percentual", ROSA_CLARO)
 
-    ws["A7"] = "Decisao"
-    ws["A7"].font = Font(bold=True, color=AZUL_ESCURO)
-    ws["B7"] = result.decision
-    ws["B7"].alignment = Alignment(wrap_text=True, vertical="top")
-    ws.merge_cells("B7:H8")
-    _fill_range(ws, "A7:H8", BRANCO)
+    ws["A8"] = "Decisao"
+    ws["A8"].font = Font(bold=True, color=VERDE_ESCURO)
+    ws["B8"] = result.decision
+    ws["B8"].alignment = Alignment(wrap_text=True, vertical="center")
+    ws.merge_cells("B8:H9")
+    _fill_range(ws, "A8:H9", BRANCO)
 
     metrics = result.metrics.sort_values("grupo").reset_index(drop=True)
-    table_start = 11
+    table_start = 12
     headers = ["Grupo", "Compradores", "GMV", "Cashback", "Lucro", "Margem", "ROI", "Ticket medio"]
     _write_header(ws, table_start, headers)
     for idx, row in metrics.iterrows():
@@ -156,7 +156,7 @@ def _build_partner_sheet(wb: Workbook, result: AnalysisResult, chart_dir: Path) 
             ws.cell(row=excel_row, column=col).number_format = '0.00%'
 
     labels = metrics["grupo"].tolist()
-    colors = ["2F75B5" if group == result.decision_group else "A5A5A5" for group in labels]
+    colors = [VERDE_MELIUZ if group == result.decision_group else ROSA_MELIUZ for group in labels]
     lucro_img = _bar_chart_image(
         chart_dir / f"{_slug(result.partner)}_lucro.png",
         "Lucro liquido por grupo",
@@ -173,8 +173,8 @@ def _build_partner_sheet(wb: Workbook, result: AnalysisResult, chart_dir: Path) 
         "percentual",
         colors,
     )
-    _add_image(ws, lucro_img, "J3", 520, 285)
-    _add_image(ws, roi_img, "J19", 520, 285)
+    _add_image(ws, lucro_img, "J4", 520, 285)
+    _add_image(ws, roi_img, "J18", 520, 285)
 
     _daily_audit_table(ws, result)
     _set_widths(
@@ -209,7 +209,7 @@ def _daily_audit_table(ws, result: AnalysisResult) -> None:
     start_row = 3
     start_col = 15
     ws.cell(row=1, column=start_col, value="Dados diarios para auditoria").font = Font(
-        bold=True, size=13, color=AZUL_ESCURO
+        bold=True, size=13, color=VERDE_ESCURO
     )
     daily = result.daily_metrics.sort_values(["data", "grupo"])
     pivot = (
@@ -223,7 +223,7 @@ def _daily_audit_table(ws, result: AnalysisResult) -> None:
     for offset, header in enumerate(headers):
         cell = ws.cell(row=start_row, column=start_col + offset, value=header)
         cell.font = Font(bold=True, color=BRANCO)
-        cell.fill = PatternFill("solid", fgColor=VERDE)
+        cell.fill = PatternFill("solid", fgColor=VERDE_MELIUZ)
         cell.alignment = Alignment(horizontal="center")
         cell.border = _thin_border()
 
@@ -254,8 +254,9 @@ def _bar_chart_image(
     label_font = _font(20)
     value_font = _font(19, bold=True)
 
-    draw.rounded_rectangle((8, 8, width - 8, height - 8), radius=24, outline="#D9E2F3", width=2, fill="#FFFFFF")
-    draw.text((margin_left, 28), title, fill=f"#{AZUL_ESCURO}", font=title_font)
+    draw.rounded_rectangle((8, 8, width - 8, height - 8), radius=28, outline="#E6D5DE", width=2, fill="#FFFFFF")
+    draw.rectangle((8, 8, 20, height - 8), fill=f"#{ROSA_MELIUZ}")
+    draw.text((margin_left, 28), title, fill=f"#{VERDE_ESCURO}", font=title_font)
 
     max_value = max(values) if values else 1
     max_value = max(max_value, 1)
@@ -272,9 +273,9 @@ def _bar_chart_image(
         x1 = x0 + bar_w
         draw.rounded_rectangle((x0, y0, x1, baseline), radius=10, fill=color)
         draw.text((x0 + bar_w / 2, baseline + 18), label, fill=f"#{CINZA_TEXTO}", font=label_font, anchor="ma")
-        draw.text((x0 + bar_w / 2, y0 - 30), _format_value(value, value_kind), fill=f"#{AZUL_ESCURO}", font=value_font, anchor="ma")
+        draw.text((x0 + bar_w / 2, y0 - 30), _format_value(value, value_kind), fill=f"#{VERDE_ESCURO}", font=value_font, anchor="ma")
 
-    draw.line((margin_left, baseline, width - margin_right, baseline), fill="#BFBFBF", width=2)
+    draw.line((margin_left, baseline, width - margin_right, baseline), fill="#D8E3D8", width=2)
     path.parent.mkdir(parents=True, exist_ok=True)
     image.save(path)
     return path
@@ -287,6 +288,16 @@ def _add_image(ws, path: Path, anchor: str, width: int, height: int) -> None:
     ws.add_image(image, anchor)
 
 
+def _insert_logo(ws, anchor: str) -> None:
+    logo_path = Path(__file__).resolve().parents[1] / "identidade_visual" / "logo-icon-2022-1080x1080.png"
+    if not logo_path.exists():
+        return
+    image = ExcelImage(str(logo_path))
+    image.width = 42
+    image.height = 42
+    ws.add_image(image, anchor)
+
+
 def _prepare_sheet(ws) -> None:
     ws.sheet_view.showGridLines = False
     _fill_range(ws, "A1:Z120", CINZA_FUNDO)
@@ -294,7 +305,7 @@ def _prepare_sheet(ws) -> None:
         ws.row_dimensions[row].height = 22
 
 
-def _title(ws, text: str, cell_range: str) -> None:
+def _title(ws, text: str, cell_range: str, subtitle: str = "") -> None:
     start_cell = cell_range.split(":")[0]
     ws[start_cell] = text
     ws[start_cell].font = Font(bold=True, size=18, color=BRANCO)
@@ -302,15 +313,19 @@ def _title(ws, text: str, cell_range: str) -> None:
     ws.merge_cells(cell_range)
     for row in ws[cell_range]:
         for cell in row:
-            cell.fill = PatternFill("solid", fgColor=AZUL_ESCURO)
-    ws.row_dimensions[1].height = 32
+            cell.fill = PatternFill("solid", fgColor=VERDE_MELIUZ)
+    ws[start_cell] = f"     {text}\n     {subtitle}" if subtitle else f"     {text}"
+    ws[start_cell].font = Font(bold=True, size=16, color=BRANCO)
+    ws.row_dimensions[1].height = 26
+    ws.row_dimensions[2].height = 24
+    _insert_logo(ws, "A1")
 
 
 def _kpi_card(ws, cell_range: str, label: str, value, kind: str, fill: str) -> None:
     start, end = cell_range.split(":")
     ws.merge_cells(cell_range)
     ws[start] = f"{label}\n{_format_value(value, kind)}"
-    ws[start].font = Font(bold=True, size=13, color=AZUL_ESCURO)
+    ws[start].font = Font(bold=True, size=13, color=VERDE_ESCURO)
     ws[start].alignment = Alignment(horizontal="center", vertical="center", wrap_text=True)
     start_col = ws[start].column
     end_col = ws[end].column
@@ -328,7 +343,7 @@ def _write_header(ws, row: int, headers: list[str]) -> None:
     for col_idx, header in enumerate(headers, start=1):
         cell = ws.cell(row=row, column=col_idx, value=header)
         cell.font = Font(bold=True, color=BRANCO)
-        cell.fill = PatternFill("solid", fgColor=VERDE)
+        cell.fill = PatternFill("solid", fgColor=VERDE_MELIUZ)
         cell.alignment = Alignment(horizontal="center", vertical="center", wrap_text=True)
         cell.border = _thin_border()
 
