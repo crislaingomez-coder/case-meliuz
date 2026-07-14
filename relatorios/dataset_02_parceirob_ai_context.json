@@ -1,0 +1,71 @@
+{
+  "test_name": "Teste cashback - Parceiro B",
+  "partner": "Parceiro B",
+  "period": "2011-05-01 a 2011-06-30",
+  "recommended_variant": "Grupo 1",
+  "decision": "Escalar Grupo 1 para 100% do trafego, mantendo monitoramento de margem e cashback pago nos primeiros dias.",
+  "result_summary": "Grupo 1 liderou em lucro liquido total (R$ 286.570,00), com margem sobre GMV de 7,00% e ROI de cashback de 175,00%. A diferenca para o segundo colocado foi de R$ 143.413,00 (100,18%).",
+  "quality_notes": [
+    "Nenhuma perda de linha apos validacao de tipos e nulos."
+  ],
+  "metrics": [
+    {
+      "grupo": "Grupo 1",
+      "dias": 61,
+      "compradores": 7990,
+      "gmv_total": 4093818.0,
+      "comissao_total": 450321.0,
+      "cashback_total": 163751.0,
+      "lucro_liquido_total": 286570.0,
+      "lucro_liquido_medio_dia": 4697.868852459016,
+      "ic95_lucro_dia": 478.22715719094924,
+      "margem_sobre_gmv": 0.07000066930185954,
+      "roi_cashback": 1.7500351142893784,
+      "ticket_medio": 512.3677096370463,
+      "cashback_por_comprador": 20.494493116395493,
+      "uplift_lucro_vs_baseline": 0.0,
+      "uplift_gmv_vs_baseline": 0.0,
+      "ranking_lucro": 1,
+      "ranking_roi": 1
+    },
+    {
+      "grupo": "Grupo 2",
+      "dias": 61,
+      "compradores": 5452,
+      "gmv_total": 2863019.0,
+      "comissao_total": 314935.0,
+      "cashback_total": 171778.0,
+      "lucro_liquido_total": 143157.0,
+      "lucro_liquido_medio_dia": 2346.8360655737706,
+      "ic95_lucro_dia": 270.5039738196313,
+      "margem_sobre_gmv": 0.05000211315398186,
+      "roi_cashback": 0.8333837860494359,
+      "ticket_medio": 525.1318782098313,
+      "cashback_por_comprador": 31.50733675715334,
+      "uplift_lucro_vs_baseline": -0.5004466622465714,
+      "uplift_gmv_vs_baseline": -0.3006481968665925,
+      "ranking_lucro": 2,
+      "ranking_roi": 2
+    },
+    {
+      "grupo": "Grupo 3",
+      "dias": 61,
+      "compradores": 5029,
+      "gmv_total": 2629963.0,
+      "comissao_total": 289290.0,
+      "cashback_total": 236697.0,
+      "lucro_liquido_total": 52593.0,
+      "lucro_liquido_medio_dia": 862.1803278688525,
+      "ic95_lucro_dia": 92.63476241685146,
+      "margem_sobre_gmv": 0.01999761973837655,
+      "roi_cashback": 0.22219546508827742,
+      "ticket_medio": 522.9594352754027,
+      "cashback_por_comprador": 47.066414794193676,
+      "uplift_lucro_vs_baseline": -0.816474159891126,
+      "uplift_gmv_vs_baseline": -0.3575769611643703,
+      "ranking_lucro": 3,
+      "ranking_roi": 3
+    }
+  ],
+  "instruction_for_ai": "Use estes indicadores para revisar a recomendacao executiva. Nao invente metricas ausentes; mencione explicitamente a limitacao de nao haver usuarios expostos."
+}

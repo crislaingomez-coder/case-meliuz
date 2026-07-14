@@ -1,0 +1,52 @@
+{
+  "test_name": "Teste cashback - Parceiro C",
+  "partner": "Parceiro C",
+  "period": "2011-07-01 a 2011-08-14",
+  "recommended_variant": "Grupo 1",
+  "decision": "Escalar Grupo 1 para 100% do trafego, mantendo monitoramento de margem e cashback pago nos primeiros dias.",
+  "result_summary": "Grupo 1 liderou em lucro liquido total (R$ 34.769,00), com margem sobre GMV de 2,00% e ROI de cashback de 40,00%. A diferenca para o segundo colocado foi de R$ 34.769,00 (sem base percentual positiva).",
+  "quality_notes": [
+    "Nenhuma perda de linha apos validacao de tipos e nulos."
+  ],
+  "metrics": [
+    {
+      "grupo": "Grupo 1",
+      "dias": 45,
+      "compradores": 4549,
+      "gmv_total": 1738460.0,
+      "comissao_total": 121693.0,
+      "cashback_total": 86924.0,
+      "lucro_liquido_total": 34769.0,
+      "lucro_liquido_medio_dia": 772.6444444444444,
+      "ic95_lucro_dia": 58.34390559763791,
+      "margem_sobre_gmv": 0.0199998849556504,
+      "roi_cashback": 0.3999930974184345,
+      "ticket_medio": 382.16311277203783,
+      "cashback_por_comprador": 19.108375467135634,
+      "uplift_lucro_vs_baseline": 0.0,
+      "uplift_gmv_vs_baseline": 0.0,
+      "ranking_lucro": 1,
+      "ranking_roi": 1
+    },
+    {
+      "grupo": "Grupo 2",
+      "dias": 45,
+      "compradores": 4522,
+      "gmv_total": 1685235.0,
+      "comissao_total": 117967.0,
+      "cashback_total": 117967.0,
+      "lucro_liquido_total": 0.0,
+      "lucro_liquido_medio_dia": 0.0,
+      "ic95_lucro_dia": 0.0,
+      "margem_sobre_gmv": 0.0,
+      "roi_cashback": 0.0,
+      "ticket_medio": 372.6747014595312,
+      "cashback_por_comprador": 26.08735072976559,
+      "uplift_lucro_vs_baseline": -1.0,
+      "uplift_gmv_vs_baseline": -0.03061617753644038,
+      "ranking_lucro": 2,
+      "ranking_roi": 2
+    }
+  ],
+  "instruction_for_ai": "Use estes indicadores para revisar a recomendacao executiva. Nao invente metricas ausentes; mencione explicitamente a limitacao de nao haver usuarios expostos."
+}
