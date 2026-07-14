@@ -56,12 +56,6 @@ O arquivo `saidas/painel_meliuz.xlsx` contem a visao visual da analise, com abas
 
 Sempre que o comando e executado, os arquivos de saida sao recriados. Portanto, se os CSVs da pasta `dados/` forem substituidos por novos testes no mesmo schema, o resumo, os relatorios e o painel visual passam a refletir os novos dados.
 
-## Planilha publica
-
-Pasta publica com os arquivos de acompanhamento da entrega:
-
-https://drive.google.com/drive/folders/1xsJaRszwJicuEFyQYcgmJOQOlDo_gLVq?usp=sharing
-
 ## Saidas geradas
 
 - `relatorios/*.md`: relatorios executivos por parceiro.
@@ -115,8 +109,6 @@ O arquivo `saidas/painel_meliuz.xlsx` foi criado para apoiar a leitura gerencial
 - KPIs consolidados;
 - graficos de lucro liquido e ROI;
 - dados diarios para auditoria.
-
-Esse arquivo pode ser importado no Google Sheets caso a entrega precise ficar em uma planilha compartilhavel.
 
 Observacao: as abas executivas do Excel usam imagens geradas automaticamente pelo Python para melhorar a apresentacao visual. Os dados auditaveis ficam nas abas `Acompanhamento` e `Auditoria_Diaria`.
 

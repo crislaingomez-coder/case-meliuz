@@ -45,5 +45,3 @@ Nos tres datasets, o Grupo 1 foi a melhor opcao economica:
 ## Recomendacao de entrega
 
 Publicar o diretorio `case-meliuz/` em um repositorio publico no GitHub, com os relatorios ja gerados, o painel visual e o CSV de acompanhamento preenchido.
-
-Se quiser adicionar o diferencial de Google Sheets, basta importar `resumo/acompanhamento_testes.csv` para uma planilha publica e colocar o link no README.
