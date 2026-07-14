@@ -54,7 +54,7 @@ def main() -> None:
     elif args.dataset:
         dataset_paths = [Path(args.dataset)]
     else:
-        raise SystemExit("Informe um dataset ou use --all.")
+        raise SystemExit("Informe um dataset ou use --todos.")
 
     results = []
     for dataset_path in dataset_paths:
