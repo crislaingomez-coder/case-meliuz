@@ -4,3 +4,4 @@ __pycache__/
 .venv/
 venv/
 saidas/dashboard_meliuz.xlsx
+saidas/graficos/
