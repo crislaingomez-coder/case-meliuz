@@ -1,5 +1,7 @@
 {
   "test_name": "Teste cashback - Parceiro C",
+  "objective": "Analisar teste A/B de cashback e recomendar qual variante deve ser escalada para 100% do trafego.",
+  "central_question": "Dado esse teste A/B, qual variante de cashback devemos escalar para 100% do trafego?",
   "partner": "Parceiro C",
   "period": "2011-07-01 a 2011-08-14",
   "recommended_variant": "Grupo 1",
@@ -7,6 +9,21 @@
   "result_summary": "Grupo 1 liderou em lucro liquido total (R$ 34.769,00), com margem sobre GMV de 2,00% e ROI de cashback de 40,00%. A diferenca para o segundo colocado foi de R$ 34.769,00 (sem base percentual positiva).",
   "quality_notes": [
     "Nenhuma perda de linha apos validacao de tipos e nulos."
+  ],
+  "decision_criteria": [
+    "Priorizar lucro liquido absoluto.",
+    "Validar margem sobre GMV e ROI de cashback.",
+    "Nao escolher apenas a variante com maior GMV se ela destruir margem."
+  ],
+  "limitations": [
+    "O dataset nao informa usuarios expostos por grupo.",
+    "Nao calcular taxa de conversao real nem significancia estatistica de conversao.",
+    "Monitorar a variante vencedora apos rollout para validar estabilidade."
+  ],
+  "suggested_next_steps": [
+    "Escalar a variante recomendada de forma monitorada.",
+    "Acompanhar margem, cashback pago e lucro liquido nos primeiros dias.",
+    "Revisar a conclusao se novos dados trouxerem usuarios expostos por grupo."
   ],
   "metrics": [
     {

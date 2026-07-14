@@ -353,12 +353,29 @@ def _build_ai_context(
 ) -> dict:
     return {
         "test_name": test_name,
+        "objective": "Analisar teste A/B de cashback e recomendar qual variante deve ser escalada para 100% do trafego.",
+        "central_question": "Dado esse teste A/B, qual variante de cashback devemos escalar para 100% do trafego?",
         "partner": partner,
         "period": period,
         "recommended_variant": decision_group,
         "decision": decision,
         "result_summary": result_summary,
         "quality_notes": quality_notes,
+        "decision_criteria": [
+            "Priorizar lucro liquido absoluto.",
+            "Validar margem sobre GMV e ROI de cashback.",
+            "Nao escolher apenas a variante com maior GMV se ela destruir margem.",
+        ],
+        "limitations": [
+            "O dataset nao informa usuarios expostos por grupo.",
+            "Nao calcular taxa de conversao real nem significancia estatistica de conversao.",
+            "Monitorar a variante vencedora apos rollout para validar estabilidade.",
+        ],
+        "suggested_next_steps": [
+            "Escalar a variante recomendada de forma monitorada.",
+            "Acompanhar margem, cashback pago e lucro liquido nos primeiros dias.",
+            "Revisar a conclusao se novos dados trouxerem usuarios expostos por grupo.",
+        ],
         "metrics": metrics.to_dict(orient="records"),
         "instruction_for_ai": (
             "Use estes indicadores para revisar a recomendacao executiva. "

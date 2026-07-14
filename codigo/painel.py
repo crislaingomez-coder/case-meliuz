@@ -55,7 +55,6 @@ def build_dashboard(results: list[AnalysisResult], output_path: str | Path) -> P
 def _summary_dashboard_image(results: list[AnalysisResult], path: Path) -> Path:
     width, height = 1600, 900
     img, draw = _canvas(width, height)
-    _sidebar(draw, height)
     _brand_header(img, draw, "Dashboard de Testes A/B", "Analise automatizada de cashback")
 
     winners = [r.metrics[r.metrics["grupo"] == r.decision_group].iloc[0] for r in results]
@@ -64,20 +63,20 @@ def _summary_dashboard_image(results: list[AnalysisResult], path: Path) -> Path:
     avg_roi = sum(float(row["roi_cashback"]) for row in winners) / len(winners)
 
     cards = [
-        ("Testes analisados", str(len(results)), PINK, "T"),
-        ("Lucro vencedor total", _fmt_money(total_profit), GREEN_2, "L"),
-        ("Margem media", _fmt_pct(avg_margin), ORANGE, "M"),
-        ("ROI medio", _fmt_pct(avg_roi), BLUE, "R"),
+        ("Testes analisados", str(len(results)), PINK, "check"),
+        ("Lucro vencedor total", _fmt_money(total_profit), GREEN_2, "money"),
+        ("Margem media", _fmt_pct(avg_margin), ORANGE, "percent"),
+        ("ROI medio", _fmt_pct(avg_roi), BLUE, "return"),
     ]
     for idx, (label, value, color, icon) in enumerate(cards):
-        _kpi(draw, 250 + idx * 320, 110, 285, 118, label, value, color, icon)
+        _kpi(draw, 64 + idx * 370, 132, 330, 118, label, value, color, icon)
 
     labels = [r.partner.replace("Parceiro ", "Parceiro ") for r in results]
     profit_values = [float(row["lucro_liquido_total"]) for row in winners]
     roi_values = [float(row["roi_cashback"]) for row in winners]
 
-    _bar_panel(draw, 250, 270, 600, 300, "Lucro da variante recomendada", labels, profit_values, "moeda", [GREEN_2, PINK, ORANGE])
-    _bar_panel(draw, 900, 270, 600, 300, "ROI de cashback da variante recomendada", labels, roi_values, "percentual", [PINK, PINK_2, BLUE])
+    _bar_panel(draw, 64, 292, 690, 300, "Lucro da variante recomendada", labels, profit_values, "moeda", [GREEN_2, PINK, ORANGE])
+    _bar_panel(draw, 806, 292, 690, 300, "ROI de cashback da variante recomendada", labels, roi_values, "percentual", [PINK, PINK_2, BLUE])
 
     table_rows = []
     for result, winner in zip(results, winners):
@@ -88,14 +87,14 @@ def _summary_dashboard_image(results: list[AnalysisResult], path: Path) -> Path:
             _fmt_pct(float(winner["margem_sobre_gmv"])),
             _fmt_pct(float(winner["roi_cashback"])),
         ])
-    _table_panel(draw, 250, 620, 820, 220, "Resumo dos testes", ["Parceiro", "Variante", "Lucro", "Margem", "ROI"], table_rows)
+    _table_panel(draw, 64, 638, 900, 205, "Resumo dos testes", ["Parceiro", "Variante", "Lucro", "Margem", "ROI"], table_rows)
 
     best = max(zip(results, winners), key=lambda item: float(item[1]["lucro_liquido_total"]))
     insight = (
-        f"Principal leitura: {best[0].partner} concentra o maior lucro vencedor. "
-        "Em todos os testes, Grupo 1 preservou melhor rentabilidade frente ao custo de cashback."
+        "Conclusao geral: Grupo 1 foi recomendado nos 3 testes por preservar melhor "
+        f"rentabilidade. {best[0].partner} concentrou o maior lucro vencedor."
     )
-    _insight_panel(draw, 1110, 620, 390, 220, insight)
+    _insight_panel(draw, 1010, 638, 486, 205, insight)
 
     img.save(path)
     return path
@@ -104,28 +103,27 @@ def _summary_dashboard_image(results: list[AnalysisResult], path: Path) -> Path:
 def _partner_dashboard_image(result: AnalysisResult, path: Path) -> Path:
     width, height = 1600, 900
     img, draw = _canvas(width, height)
-    _sidebar(draw, height)
     _brand_header(img, draw, result.test_name, f"{result.period} | recomendacao automatizada")
 
     metrics = result.metrics.sort_values("grupo").reset_index(drop=True)
     winner = result.metrics[result.metrics["grupo"] == result.decision_group].iloc[0]
 
     cards = [
-        ("Variante", result.decision_group, PINK, "V"),
-        ("Lucro liquido", _fmt_money(float(winner["lucro_liquido_total"])), GREEN_2, "L"),
-        ("Margem GMV", _fmt_pct(float(winner["margem_sobre_gmv"])), ORANGE, "M"),
-        ("ROI cashback", _fmt_pct(float(winner["roi_cashback"])), BLUE, "R"),
+        ("Variante", result.decision_group, PINK, "check"),
+        ("Lucro liquido", _fmt_money(float(winner["lucro_liquido_total"])), GREEN_2, "money"),
+        ("Margem GMV", _fmt_pct(float(winner["margem_sobre_gmv"])), ORANGE, "percent"),
+        ("ROI cashback", _fmt_pct(float(winner["roi_cashback"])), BLUE, "return"),
     ]
     for idx, (label, value, color, icon) in enumerate(cards):
-        _kpi(draw, 250 + idx * 320, 110, 285, 118, label, value, color, icon)
+        _kpi(draw, 64 + idx * 370, 132, 330, 118, label, value, color, icon)
 
     labels = metrics["grupo"].tolist()
     colors = [GREEN_2 if group == result.decision_group else PINK for group in labels]
     _bar_panel(
         draw,
-        250,
-        270,
-        600,
+        64,
+        292,
+        690,
         300,
         "Lucro liquido por grupo",
         labels,
@@ -135,9 +133,9 @@ def _partner_dashboard_image(result: AnalysisResult, path: Path) -> Path:
     )
     _bar_panel(
         draw,
-        900,
-        270,
-        600,
+        806,
+        292,
+        690,
         300,
         "ROI de cashback por grupo",
         labels,
@@ -159,15 +157,18 @@ def _partner_dashboard_image(result: AnalysisResult, path: Path) -> Path:
         ])
     _table_panel(
         draw,
-        250,
-        620,
-        860,
-        220,
+        64,
+        638,
+        930,
+        205,
         "Comparativo por variante",
         ["Grupo", "Compr.", "GMV", "Cashback", "Lucro", "Margem", "ROI"],
         rows,
     )
-    _insight_panel(draw, 1150, 620, 350, 220, result.decision)
+    insight = result.decision
+    if (metrics["lucro_liquido_total"].astype(float) <= 0).any():
+        insight += " Atencao: ao menos uma variante teve lucro liquido zero ou negativo."
+    _insight_panel(draw, 1040, 638, 456, 205, insight)
     img.save(path)
     return path
 
@@ -224,34 +225,33 @@ def _canvas(width: int, height: int):
     return image, draw
 
 
-def _sidebar(draw: ImageDraw.ImageDraw, height: int) -> None:
-    draw.rounded_rectangle((24, 24, 205, height - 24), radius=22, fill="#171D22")
-    draw.text((54, 142), "MELIUZ", fill=PINK, font=_font(24, bold=True))
-    draw.text((54, 180), "Growth AI-native", fill=MUTED, font=_font(17))
-    draw.line((54, 230, 176, 230), fill=LINE, width=2)
-    items = ["Resumo", "Variantes", "Decisao", "Auditoria"]
-    for idx, item in enumerate(items):
-        y = 270 + idx * 46
-        fill = PINK if idx == 0 else MUTED
-        draw.ellipse((54, y, 68, y + 14), fill=fill)
-        draw.text((82, y - 4), item, fill=fill, font=_font(17, bold=idx == 0))
-
-
 def _brand_header(image: Image.Image, draw: ImageDraw.ImageDraw, title: str, subtitle: str) -> None:
     logo_path = Path(__file__).resolve().parents[1] / "identidade_visual" / "logo-icon-2022-1080x1080.png"
     if logo_path.exists():
-        logo = Image.open(logo_path).convert("RGBA").resize((72, 72))
-        image.paste(logo, (250, 38), logo)
-    draw.text((340, 44), title, fill=TEXT, font=_font(38, bold=True))
-    draw.text((342, 91), subtitle, fill=MUTED, font=_font(20))
+        logo = Image.open(logo_path).convert("RGBA").resize((76, 76))
+        image.paste(logo, (64, 40), logo)
+    draw.text((164, 46), title, fill=TEXT, font=_font(38, bold=True))
+    draw.text((166, 94), subtitle, fill=MUTED, font=_font(20))
 
 
 def _kpi(draw: ImageDraw.ImageDraw, x: int, y: int, w: int, h: int, label: str, value: str, color: str, icon: str) -> None:
     draw.rounded_rectangle((x, y, x + w, y + h), radius=18, fill=PANEL, outline=LINE, width=2)
     draw.ellipse((x + 22, y + 24, x + 78, y + 80), fill=color)
-    draw.text((x + 50, y + 38), icon, fill=TEXT, font=_font(22, bold=True), anchor="ma")
+    _draw_icon(draw, x + 50, y + 52, icon)
     draw.text((x + 96, y + 26), label, fill=MUTED, font=_font(16))
     draw.text((x + 96, y + 56), value, fill=TEXT, font=_font(24, bold=True))
+
+
+def _draw_icon(draw: ImageDraw.ImageDraw, cx: int, cy: int, icon: str) -> None:
+    if icon == "check":
+        draw.line((cx - 14, cy, cx - 4, cy + 11, cx + 15, cy - 13), fill=TEXT, width=5, joint="curve")
+    elif icon == "money":
+        draw.text((cx, cy - 17), "$", fill=TEXT, font=_font(30, bold=True), anchor="ma")
+    elif icon == "percent":
+        draw.text((cx, cy - 17), "%", fill=TEXT, font=_font(30, bold=True), anchor="ma")
+    elif icon == "return":
+        draw.arc((cx - 18, cy - 18, cx + 18, cy + 18), 40, 315, fill=TEXT, width=4)
+        draw.polygon([(cx + 10, cy - 19), (cx + 22, cy - 17), (cx + 14, cy - 6)], fill=TEXT)
 
 
 def _bar_panel(draw: ImageDraw.ImageDraw, x: int, y: int, w: int, h: int, title: str, labels: list[str], values: list[float], kind: str, colors: list[str]) -> None:

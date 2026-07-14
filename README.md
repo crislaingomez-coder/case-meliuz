@@ -90,11 +90,21 @@ Como o dataset nao informa usuarios expostos por variante, a solucao nao calcula
 
 ## Uso com IA
 
-O arquivo `instrucoes_ia/prompt_analista_ia.md` pode ser usado em ChatGPT, Claude, Gemini, Cursor ou Claude Code junto com o JSON gerado em `relatorios/*_ai_context.json`.
+A solucao foi pensada para ser acionada por ferramentas como ChatGPT, Claude, Claude Code, Cursor ou Gemini. A IA atua como camada de acionamento e interpretacao; os calculos ficam deterministicos em Python para reduzir inconsistencias e evitar conclusoes inventadas.
+
+Arquivos de apoio:
+
+- `instrucoes_ia/prompt_analista_ia.md`: prompt para revisar a recomendacao.
+- `instrucoes_ia/como_usar_com_ia.md`: exemplos de acionamento em linguagem natural.
+- `relatorios/*_ai_context.json`: contexto estruturado de cada teste para a IA interpretar.
 
 Exemplo de comando em linguagem natural:
 
 > Analise o contexto JSON deste teste A/B e revise a recomendacao executiva seguindo o prompt do projeto.
+
+Outro exemplo:
+
+> Rode a solucao para todos os CSVs em `dados/`, gere o painel executivo e revise se a decisao de escalar a variante recomendada faz sentido.
 
 ## Dashboard visual
 
@@ -107,6 +117,8 @@ O arquivo `saidas/painel_meliuz.xlsx` foi criado para apoiar a leitura gerencial
 - dados diarios para auditoria.
 
 Esse arquivo pode ser importado no Google Sheets caso a entrega precise ficar em uma planilha compartilhavel.
+
+Observacao: as abas executivas do Excel usam imagens geradas automaticamente pelo Python para melhorar a apresentacao visual. Os dados auditaveis ficam nas abas `Acompanhamento` e `Auditoria_Diaria`.
 
 ## Estrutura
 
