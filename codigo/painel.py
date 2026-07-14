@@ -4,7 +4,9 @@ from pathlib import Path
 
 import pandas as pd
 from openpyxl import Workbook
-from openpyxl.chart import BarChart, LineChart, Reference
+from openpyxl.chart import BarChart, Reference
+from openpyxl.chart.label import DataLabelList
+from openpyxl.chart.shapes import GraphicalProperties
 from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
 from openpyxl.utils import get_column_letter
 
@@ -100,6 +102,7 @@ def _build_summary_sheet(ws, results: list[AnalysisResult]) -> None:
     _summary_charts(ws, start_row, len(results))
     _set_widths(ws, {"A": 18, "B": 24, "C": 14, "D": 18, "E": 14, "F": 14, "G": 44, "H": 14})
     ws.freeze_panes = "A8"
+    ws.sheet_view.zoomScale = 90
 
 
 def _summary_charts(ws, start_row: int, row_count: int) -> None:
@@ -107,27 +110,29 @@ def _summary_charts(ws, start_row: int, row_count: int) -> None:
 
     profit_chart = BarChart()
     profit_chart.title = "Lucro da variante recomendada"
-    profit_chart.y_axis.title = "Lucro liquido"
+    profit_chart.y_axis.title = ""
     profit_chart.x_axis.title = ""
     profit_chart.legend = None
-    profit_chart.style = 10
-    profit_chart.height = 9
+    profit_chart.style = 11
+    profit_chart.height = 7.8
     profit_chart.width = 15
+    _clean_chart(profit_chart)
     profit_chart.add_data(Reference(ws, min_col=4, min_row=start_row, max_row=max_row), titles_from_data=True)
     profit_chart.set_categories(Reference(ws, min_col=1, min_row=start_row + 1, max_row=max_row))
-    ws.add_chart(profit_chart, "A15")
+    ws.add_chart(profit_chart, "A14")
 
     roi_chart = BarChart()
     roi_chart.title = "ROI de cashback da variante recomendada"
-    roi_chart.y_axis.title = "ROI"
+    roi_chart.y_axis.title = ""
     roi_chart.x_axis.title = ""
     roi_chart.legend = None
-    roi_chart.style = 13
-    roi_chart.height = 9
+    roi_chart.style = 12
+    roi_chart.height = 7.8
     roi_chart.width = 15
+    _clean_chart(roi_chart)
     roi_chart.add_data(Reference(ws, min_col=6, min_row=start_row, max_row=max_row), titles_from_data=True)
     roi_chart.set_categories(Reference(ws, min_col=1, min_row=start_row + 1, max_row=max_row))
-    ws.add_chart(roi_chart, "E15")
+    ws.add_chart(roi_chart, "E14")
 
 
 def _build_partner_sheet(wb: Workbook, result: AnalysisResult) -> None:
@@ -193,6 +198,7 @@ def _build_partner_sheet(wb: Workbook, result: AnalysisResult) -> None:
         {"A": 16, "B": 14, "C": 15, "D": 15, "E": 16, "F": 12, "G": 12, "H": 15, "I": 4, "J": 4},
     )
     ws.freeze_panes = "A11"
+    ws.sheet_view.zoomScale = 90
 
 
 def _partner_charts(ws, table_start: int, row_count: int) -> None:
@@ -201,31 +207,34 @@ def _partner_charts(ws, table_start: int, row_count: int) -> None:
 
     profit_chart = BarChart()
     profit_chart.title = "Lucro liquido por grupo"
-    profit_chart.y_axis.title = "R$"
+    profit_chart.y_axis.title = ""
     profit_chart.x_axis.title = ""
     profit_chart.legend = None
-    profit_chart.style = 10
-    profit_chart.height = 9
+    profit_chart.style = 11
+    profit_chart.height = 7.6
     profit_chart.width = 14
+    _clean_chart(profit_chart)
     profit_chart.add_data(Reference(ws, min_col=5, min_row=table_start, max_row=max_row), titles_from_data=True)
     profit_chart.set_categories(categories)
-    ws.add_chart(profit_chart, "J3")
+    ws.add_chart(profit_chart, "J4")
 
     margin_chart = BarChart()
-    margin_chart.title = "Margem e ROI por grupo"
-    margin_chart.y_axis.title = "%"
+    margin_chart.title = "ROI de cashback por grupo"
+    margin_chart.y_axis.title = ""
     margin_chart.x_axis.title = ""
-    margin_chart.style = 13
-    margin_chart.height = 9
+    margin_chart.legend = None
+    margin_chart.style = 12
+    margin_chart.height = 7.6
     margin_chart.width = 14
-    margin_chart.add_data(Reference(ws, min_col=6, min_row=table_start, max_col=7, max_row=max_row), titles_from_data=True)
+    _clean_chart(margin_chart)
+    margin_chart.add_data(Reference(ws, min_col=7, min_row=table_start, max_row=max_row), titles_from_data=True)
     margin_chart.set_categories(categories)
-    ws.add_chart(margin_chart, "J20")
+    ws.add_chart(margin_chart, "J19")
 
 
 def _daily_audit_table(ws, result: AnalysisResult) -> None:
-    start_row = 34
-    ws["A33"] = "Dados diarios para auditoria"
+    start_row = 28
+    ws["A27"] = "Dados diarios para auditoria"
     ws["A33"].font = Font(bold=True, size=12, color=AZUL_ESCURO)
 
     daily = result.daily_metrics.sort_values(["data", "grupo"])
@@ -237,6 +246,7 @@ def _daily_audit_table(ws, result: AnalysisResult) -> None:
     pivot["data"] = pd.to_datetime(pivot["data"]).dt.date.astype(str)
 
     headers = ["Data", *[str(col) for col in pivot.columns if col != "data"]]
+    ws["A27"].font = Font(bold=True, size=12, color=AZUL_ESCURO)
     _write_header(ws, start_row, headers)
 
     for row_idx, row in enumerate(pivot.itertuples(index=False), start=start_row + 1):
@@ -246,17 +256,7 @@ def _daily_audit_table(ws, result: AnalysisResult) -> None:
             if col_idx > 1:
                 cell.number_format = 'R$ #,##0.00'
 
-    end_row = start_row + len(pivot)
-    line = LineChart()
-    line.title = "Lucro liquido diario por grupo"
-    line.y_axis.title = "Lucro liquido"
-    line.x_axis.title = "Data"
-    line.style = 13
-    line.height = 10
-    line.width = 18
-    line.add_data(Reference(ws, min_col=2, min_row=start_row, max_col=len(headers), max_row=end_row), titles_from_data=True)
-    line.set_categories(Reference(ws, min_col=1, min_row=start_row + 1, max_row=end_row))
-    ws.add_chart(line, "J37")
+    # A tabela diaria fica como trilha de auditoria. Os graficos principais focam a decisao.
 
 
 def _prepare_sheet(ws) -> None:
@@ -322,6 +322,15 @@ def _body_cell(cell) -> None:
     cell.border = _thin_border()
     cell.alignment = Alignment(vertical="center", wrap_text=True)
     cell.font = Font(color=CINZA_TEXTO)
+
+
+def _clean_chart(chart: BarChart) -> None:
+    chart.y_axis.majorGridlines = None
+    chart.x_axis.majorGridlines = None
+    chart.graphical_properties = GraphicalProperties(noFill=True)
+    chart.plot_area.graphicalProperties = GraphicalProperties(noFill=True)
+    chart.dLbls = DataLabelList()
+    chart.dLbls.showVal = False
 
 
 def _fill_range(ws, cell_range: str, color: str) -> None:

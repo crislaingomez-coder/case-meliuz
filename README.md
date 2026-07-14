@@ -54,6 +54,8 @@ Depois de executar `python main.py --todos`, confira se estes arquivos foram ger
 
 O arquivo `saidas/painel_meliuz.xlsx` contem a visao visual da analise, com abas por parceiro, KPIs e graficos.
 
+Sempre que o comando e executado, os arquivos de saida sao recriados. Portanto, se os CSVs da pasta `dados/` forem substituidos por novos testes no mesmo schema, o resumo, os relatorios e o painel visual passam a refletir os novos dados.
+
 ## Planilha publica
 
 Pasta publica com os arquivos de acompanhamento da entrega:
